@@ -1,0 +1,102 @@
+---
+date: "2021-01-01"
+draft: false
+excerpt: echarts4r is a powerful graphing library in R that produces professional looking, insightful data visualizations. In this series, we'll           be taking a look at the different chart types it provides and how to customize them. This post will go over what to expect from                   this series and the layout of its structure.   
+subtitle: ""
+title: Introduction
+weight: 1
+---
+
+## echarts4r : An Overview
+
+   
+---
+
+[*echarts4r*](https://echarts4r.john-coene.com/index.html) is by far one of, if not the most, powerful graphing libraries for interactive data visualizations in R that I have come across. Of course, there are many other libraries that provide interactive functionality for data visualizations, like [*highcharter*](https://jkunst.com/highcharter/), developed by [Joshua Kunst](https://jkunst.com/) and [*plotly*](https://plotly.com/r/). There is also [*dygraphs*](https://rstudio.github.io/dygraphs/), a great interactive data viz library for time series (something I am particular passionate about). And of course, we could not talk about interactive graphing without mentioning the incredible geospatial plotting library [*Leaflet*](https://rstudio.github.io/leaflet/). 
+
+As great as *highcharter* is, it does require a license in order to use the library commercially. *Leaflet* and *dygraphs* are both specific to certain types of graphs, even if they do VERY well at what they advertise. *Plotly* is powerful, and many will point out that it is the best general purpose interactive graphing library available for free. It's that good. However, I maintain that *echarts4r* is my favorite interactive graphing library in most situations because it provides nearly as much functionality, if not equally as much, as *plotly* and, well, it just looks better!
+
+Of course this is my preference. Someone else would prefer *plotly* because they greatly value the simplicity and clarity of it, or for some other reason that I have neglected to mention. But I love *echarts4r*'s style. It looks good, performs well, and provides a great user experience without compromising its ability to effectively communicate data. And, it's easy to use! 
+
+Here are a few examples to wet your tongue. 
+
+#### Times series of revenue by month in 2017 for [Northwind Traders](https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/northwind-install) 
+
+
+```{r plot1, warning=FALSE, message=FALSE, echo=FALSE}
+library(echarts4r)
+library(dplyr)
+library(odbc)
+library(DBI)
+library(RSQL)
+library(RSQLite)
+library(lubridate)
+
+# Some colors
+primary_color = "#0d2e4c"
+secondary_color = "#009B77"
+
+# Establish a connection with the Northwind database
+con <- dbConnect(
+  drv = SQLite(),
+  dbname = "data/northwind.db"
+)
+
+# Query data
+northwind_data <- dbGetQuery(conn = con, statement = 
+                       "SELECT OrderDate,  RequiredDate, ShippedDate,
+                        sum(`Order Details`.UnitPrice * Quantity) AS B4_Discount,
+                        sum(`Order Details`.UnitPrice * Quantity * (1 - Discount)) AS After_Discount, Country, Freight
+                        FROM Orders
+                        LEFT JOIN `Order Details` USING (OrderID)
+                        LEFT JOIN Products USING (ProductID)
+                        LEFT JOIN Customers USING (CustomerID)
+                        GROUP BY OrderID, OrderDate")
+
+# Disconnect from the data base
+dbDisconnect(con)
+
+# Modify data
+northwind_data$OrderDate <- as.Date(northwind_data$OrderDate, format = "%Y-%m-%d")
+northwind_data$Year <- northwind_data$OrderDate %>% format("%Y")
+northwind_data$Month <- northwind_data$OrderDate %>% format("%B")
+northwind_data$Month_Number <- northwind_data$OrderDate %>% lubridate::month()
+
+# Filter data
+northwind_data <- northwind_data %>% 
+  filter(Year == 2017)
+
+# Add a new date variable
+northwind_data$New_Date <- paste0(northwind_data$Year, "-", northwind_data$Month_Number, "-01") %>% as.Date(format = "%Y-%m-%d")
+          
+# Obtain revenue and date data aggregated according to year (using New_date)
+northwind_data <- northwind_data %>% group_by(New_Date) %>% 
+  summarize(Total_Revenue = sum(After_Discount)) %>% 
+  ungroup()
+
+# Add a column for month number, for trend line
+northwind_data <- northwind_data %>% mutate(Months = 1:nrow(northwind_data))
+
+# Chart
+plot1 <- northwind_data %>%
+  e_charts(x = New_Date) %>%
+  e_bar(serie = Total_Revenue, name = "Total Revenue",
+        itemStyle = list(color = primary_color),
+        emphasis = list(itemStyle = list(color = secondary_color))) %>%
+  e_loess(formula = Total_Revenue ~ Months, name = "Smoothed Trend Line",
+          itemStyle = list(color = secondary_color),
+          emphasis = list(itemStyle = list(color = "white",
+                                           borderColor = primary_color))) %>%
+  e_tooltip(trigger = 'axis',
+            e_tooltip_pointer_formatter("currency", digits = 0),
+            borderColor = primary_color) %>%
+  e_datazoom(x_index = 0, type = "slider") %>%
+  e_axis_labels(x = 'Date', y = 'USD') %>%
+  e_y_axis(formatter = e_axis_formatter("currency"))%>%
+  e_axis_pointer(label = list(show = FALSE))
+
+plot1
+
+```
+
+
