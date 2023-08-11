@@ -28,7 +28,7 @@ sidebar:
   description: |
     This series focuses on the package [echarts4r](https://echarts4r.john-coene.com/index.html), an interactive data visualization library in       R. echarts4r is an R wrapper for [Apache ECharts](https://echarts.apache.org/en/index.html), a JavaScript library.  echarts4r is developed      by [John Coene](https://john-coene.com/).
     
-    I'll walk you through the various chart types that are supported, how to create and customize them (beyond what is     provided in echarts4r documentation), and even how to implement them in [Shiny](https://shiny.posit.co/) apps.
+    I'll walk you through the various chart types that are supported, how to create and customize them, and even how to implement them in [Shiny](https://shiny.posit.co/) apps.
   show_sidebar_adunit: false
   text_link_label: ""
   text_link_url: ""

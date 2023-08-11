@@ -1,5 +1,5 @@
 ---
-date: "2021-01-01"
+date: "2023-05-25"
 draft: false
 excerpt: echarts4r is a powerful graphing library in R that produces professional looking, insightful data visualizations. In this series, we'll           be taking a look at the different chart types it provides and how to customize them. This post will go over what to expect from                   this series and the layout of its structure.   
 subtitle: ""
@@ -12,13 +12,15 @@ weight: 1
    
 ---
 
-[*echarts4r*](https://echarts4r.john-coene.com/index.html) is by far one of, if not the most, powerful graphing libraries for interactive data visualizations in R that I have come across. Of course, there are many other libraries that provide interactive functionality for data visualizations, like [*highcharter*](https://jkunst.com/highcharter/), developed by [Joshua Kunst](https://jkunst.com/) and [*plotly*](https://plotly.com/r/). There is also [*dygraphs*](https://rstudio.github.io/dygraphs/), a great interactive data viz library for time series (something I am particular passionate about). And of course, we could not talk about interactive graphing without mentioning the incredible geospatial plotting library [*Leaflet*](https://rstudio.github.io/leaflet/). 
+[**echarts4r**](https://echarts4r.john-coene.com/index.html) is by far one of, if not the most, powerful graphing libraries for interactive data visualizations in R that I have come across. Of course, there are many other libraries that provide interactive functionality for data visualizations, like [**highcharter**](https://jkunst.com/highcharter/), developed by [Joshua Kunst](https://jkunst.com/), and [*plotly*](https://plotly.com/r/). There is also [**dygraphs**](https://rstudio.github.io/dygraphs/), a great interactive data viz library for time series (something I am particularly passionate about). And of course, we could not talk about interactive graphing without mentioning the incredible geospatial plotting library [**Leaflet**](https://rstudio.github.io/leaflet/). 
 
-As great as *highcharter* is, it does require a license in order to use the library commercially. *Leaflet* and *dygraphs* are both specific to certain types of graphs, even if they do VERY well at what they advertise. *Plotly* is powerful, and many will point out that it is the best general purpose interactive graphing library available for free. It's that good. However, I maintain that *echarts4r* is my favorite interactive graphing library in most situations because it provides nearly as much functionality, if not equally as much, as *plotly* and, well, it just looks better!
+As great as **highcharter** is, it does require a license in order to use the library commercially. **Leaflet** and **dygraphs** are both specific to certain types of graphs, even if they do VERY well at what they advertise. **Plotly** is powerful, and many will point out that it is the best general purpose interactive graphing library available for free. It's that good. However, I maintain that **echarts4r** is my favorite interactive graphing library in most situations because it provides nearly as much functionality, if not equally as much, as **plotly** and, well, it just looks better!
 
-Of course this is my preference. Someone else would prefer *plotly* because they greatly value the simplicity and clarity of it, or for some other reason that I have neglected to mention. But I love *echarts4r*'s style. It looks good, performs well, and provides a great user experience without compromising its ability to effectively communicate data. And, it's easy to use! 
+Of course, this is my preference. Someone else could prefer **plotly** because they greatly value the simplicity and clarity of it, or for some other reason that I have neglected to mention. But I love **echarts4r**'s style. It looks good, performs well, and provides a great user experience without compromising its ability to effectively communicate data. And, it's easy to use! 
 
 Here are a few examples to wet your tongue. 
+
+(1) First up is a relatively straightforward time series graph. It includes bars for the months of the year that indicate the total revenue the company made. The chart also includes a simple trend line. The graph looks typical of a line chart you'd see from other data viz libraries in many ways and the code behind the graph uses relatively few lines. In other words, for very few lines of code you get nicely formatted axes, complete with currency formatting and nicely spaced axis ticks. On top of these simple features, you get a beautiful tooltip on hover and an incredibly useful date filtering bar underneath the graph. Also, when hovering you get a nice highlight effect. And all of this functionality is out-of-the-box!
 
 #### Times series of revenue by month in 2017 for [Northwind Traders](https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/northwind-install) 
 
@@ -31,6 +33,7 @@ library(DBI)
 library(RSQL)
 library(RSQLite)
 library(lubridate)
+library(tidyr)
 
 # Some colors
 primary_color = "#0d2e4c"
@@ -91,12 +94,132 @@ plot1 <- northwind_data %>%
             e_tooltip_pointer_formatter("currency", digits = 0),
             borderColor = primary_color) %>%
   e_datazoom(x_index = 0, type = "slider") %>%
-  e_axis_labels(x = 'Date', y = 'USD') %>%
+  e_axis_labels(x = 'Month', y = 'USD') %>%
   e_y_axis(formatter = e_axis_formatter("currency"))%>%
   e_axis_pointer(label = list(show = FALSE))
 
 plot1
 
 ```
+
+
+(2) Next up is a beautiful choropleth map created with a few more lines of code. It comes with a zoom feature, customizable to the levels of zoom-in and zoom-out you desire. The familiar tooltip and highlight on hover feature from the time series graph is pressent here as well. The US states are clickable, which produces a fixed label that you can use to compare states that you're interested in more easily. Lastly, try playing with the color gradient in the bottom left of the graph. It provides nice functionality that you can use to filter the map. 
+
+#### Map of US arrests made for murder per 100,000 residents in 1973
+
+```{r plot2, warning=FALSE, message=FALSE, echo=FALSE}
+country_label <- function(visible = FALSE) {
+        list(
+          show = visible,
+          backgroundColor = "#FFF",
+          borderRadius = 4,
+          borderWidth = 1,
+          borderColor = primary_color,
+          color = primary_color,
+          padding = c(10, 14),
+          formatter = '{b}: {c}',
+          shadowBlur = 12,
+          shadowColor = "rgba(0,0,0,0.2)",
+          shadowOffsetY = 3
+        )
+      }
+
+
+json <- jsonlite::read_json("https://raw.githubusercontent.com/shawnbot/topogram/master/data/us-states.geojson")
+
+plot2 <- USArrests %>% 
+  tibble::rownames_to_column("states") %>% 
+  e_charts(states)  %>% 
+  e_map_register("USA", json) %>% 
+  e_map(Murder, map = "USA", roam = TRUE, 
+        scaleLimit = list(min = 1, max = 8), 
+        name = "Map", itemStyle = list(
+                  areaColor = "#e3e7e9",
+                  borderColor = "#FFF", 
+                  borderWidth = 0.5), 
+        emphasis = list(
+                  label = country_label(),
+                  itemStyle = list(areaColor = secondary_color)
+                ), 
+        select = list(
+                  label = country_label(visible = TRUE),
+                  itemStyle = list(areaColor = secondary_color)
+                ), 
+        selectedMode = "multiple")  %>%  
+  e_visual_map(Murder,
+               inRange = list(color = c("#CDDDD3", primary_color)))  %>%  
+  e_tooltip(
+            trigger = "item",
+            formatter = e_tooltip_choro_formatter(style = "decimal", digits = 0),
+            borderWidth = 1,
+            borderColor = primary_color, 
+            extraCssText = "box-shadow: 0 3px 12px rgba(0,0,0,0.2);"
+            )
+
+plot2
+```
+
+(3) Lastly, I'll show you a nice looking heatmap. This heatmap is presenting the correlations between the predictor variables I used in a logistic regression project that predicted the health status of a fetus. The letters are used in place of variable names to preserve space. In these types of studies, it's important to know if your explanatory variables (features, for you machine learning folks) are correlated, since this can have a profound effect on the reliability of whatever model you create with the data. This heatmap provides a nice color gradient, as with the previous visualization, as well as the ever useful tooltips I hope you are getting used to by now (and loving). 
+
+#### Correlation heatmap for [fetal health data](https://www.kaggle.com/datasets/andrewmvd/fetal-health-classification) predictor variables
+
+```{r plot3, warning=FALSE, message=FALSE, echo=FALSE}
+fetal_health_data <- read.csv(file = "data/fetal_health.csv")
+
+cor_data <- cor(fetal_health_data[1:20]) %>% as.data.frame()
+
+heatmap_data <- cor_data %>% 
+  pivot_longer(cols = baseline.value:histogram_variance, names_to = 'variable', values_to = 'value')
+
+heatmap_data <- heatmap_data %>% mutate(variable2 = (colnames(fetal_health_data[, 1:20]) %>%
+                                                       rep(each = 20)))
+heatmap_data$value <- heatmap_data$value %>% round(3)
+
+# Create capital letter variable names, for graphing
+heatmap_data <- heatmap_data %>% mutate(LETTERS1 = LETTERS[1:20] %>% 
+                          rep(times = 20), 
+                        LETTERS2 = LETTERS[1:20] %>% 
+                          rep(each = 20))
+
+ plot3 <- heatmap_data %>% 
+  e_charts(LETTERS2) %>% 
+  e_heatmap(LETTERS1, value, 
+            emphasis = list(itemStyle = list(color = secondary_color))) %>% 
+  e_visual_map(value, 
+               inRange = list(color = c("#CDDDD3", primary_color))) %>% 
+   e_tooltip()
+ 
+ plot3
+
+
+```
+
+I hope at least one of these visualizations caught your eye, because these graphs represent just the beginning of what is possible with **echarts4r**. Far more customization is available for you to take advantage of for the purpose of communicating data more effectively. After all, that is what data visualization is all about. 
+
+
+## What can you expect from this series?
+
+---
+
+The objectives for this series are laid out below:
+
+- Explore what types of graphs are available.
+- Learn how to use the basic **echarts4r** syntax.
+- Explore the customization options available. This includes the options that I find generally useful, as well as the method to find how to customize graphs according to your own preferences. 
+
+I am creating this series not just to show you some nice graphs and call it a day. We'll be exploring the entire **echarts4r** library together and learn how to beautiful data visualizations together. I'll try to cover not only how to create basic versions of line charts, bar charts, etc., but also how to create more complex visualizations that communicate more complex data concepts. 
+
+My goal is to provide a digital resource that compliments the official echarts4r documentation to make it easier for those who want to use this graphing library in their own projects. Ultimately, interactive data visualization is most useful when implemented in data applications or websites. Therefore, I believe that the best next step would be to provide working examples of using **echarts4r** in **Shiny** apps. I choose **Shiny** apps because it is the best framework for creating data applications that I know, is easily available in R, and is what I know best. It is a also another passion of mine that I would love to share with those who care to learn. 
+
+If you are interested in learning **echarts4r**, **Shiny**, and various other packages/libraries that I like to use on a daily basis with them (like **dplyr**, **tidyr**, and other **Tidyverse** resources) then read on! 
+
+
+
+
+
+
+
+
+
 
 
