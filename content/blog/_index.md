@@ -20,7 +20,7 @@ sidebar:
   author: Andrew Disher
   categories_link: true
   description: "You'll find posts about a variety of topics, although I frequently like to explore new data visualization packages and 
-  show examples of how they can be used. \n\nI also like to explore the use of HTML and CSS in R. This is because most R users are uncomfortable      with these technologies when they really shouldn't be! \n\nI believe R useres are perfectly suited to incorporate them into the data                visualizations since they open up a wide range of possibilities for presenting data. "
+  show examples of how they can be used. \n\nI also like to explore the use of HTML and CSS in R. This is because most R users are uncomfortable      with these technologies when they really shouldn't be! \n\nI believe R useres are perfectly suited to incorporate them into data                visualizations since they open up a wide range of possibilities for presenting data. "
   series_link: true
   show_sidebar_adunit: true
   tags_link: true
