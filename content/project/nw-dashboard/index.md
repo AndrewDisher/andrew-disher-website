@@ -6,9 +6,8 @@ categories:
 - Dashboarding
 date: "2023-08-11"
 draft: false
-excerpt: Grid is the very first CSS module created specifically to solve the layout
-  problems we’ve all been hacking our way around for as long as we’ve been making
-  websites.
+excerpt: My personal take on creating an interactive R/Shiny dashboard using the 
+         Northwind Traders data base. 
 featured: true
 layout: single-sidebar
 links:
@@ -26,7 +25,6 @@ links:
   url: https://hub.docker.com/repository/docker/adisher/rhino-shiny-nw-dashboard/general
 subtitle: "A Rhino R/Shiny Application"
 tags:
-- hugo-site
 title: The Northwind Traders Dashboard
 ---
 
@@ -85,7 +83,7 @@ application more stable.
 and what they can do. Rhino proved to be an incredible package that provided me 
 with a way to organize the structure of my app. [rhino](https://appsilon.github.io/rhino/) 
 is now my favorite way to build
-Shiny apps because it help you include your CSS and JS scripts seamlessly, as well
+Shiny apps because it helps you include your CSS and JS scripts seamlessly, as well
 as give you an efficient testing structure. The many features of this package provides
 Shiny developers with incredibly useful tools to build reliable and efficient apps. 
 

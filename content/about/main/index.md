@@ -2,8 +2,8 @@
 ## Configure page content in wide column
 title: "About myself" # leave blank to exclude
 number_featured: 1 # pulling from mainSections in config.toml
-use_featured: false # if false, use most recent by date
-number_categories: 3 # set to zero to exclude
+use_featured: true # if false, use most recent by date
+number_categories: 2 # set to zero to exclude
 show_intro: true
 intro: |
   I enjoy discovering and using technologies that make communication of data easier and more effective. Data visualization and data application development are my main interests and I am always looking for new technologies to communicate data insights in effective ways. 
@@ -13,7 +13,7 @@ intro: |
   Happy learning!
 show_outro: true
 outro: |
-  <i class="fas fa-glass-cheers pr2"></i>Sincere thanks to [Allison Hill](https://apero--apreshill.netlify.app/) for her amazing authorship of this Hugo theme!
+  <i class="far fa-smile-beam"></i> Sincere thanks to [Allison Hill](https://apero--apreshill.netlify.app/) for her amazing authorship of this Hugo theme!
 ---
 
 ** index doesn't contain a body, just front matter above.
