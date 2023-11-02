@@ -1,8 +1,8 @@
 ---
 date: "2019-02-25T13:38:41-06:00"
-description: This template has a **contact-us** form built right in. All you need
-  to do is add a valid recipient form-id to the front matter of this form page and
-  you're ready to receive submissions.
+description: Thank you for your interest in my website! If you'd like to get in touch, please
+             leave a message along with your name and email address. I'll get back to you 
+             as soon as I can. 
 draft: false
 formspree_form_id: xjvdzngp
 layout: split-right
