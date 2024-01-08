@@ -235,7 +235,7 @@ resources.
 
 Ultimately, it just makes life easier when hosting our apps. It also comes pre installed
 in the base Docker image we'll be using in the next article, when we explain the Dockerfile
-line by line. This image is the [`rocker/shiny:4.3.0`](https://hub.docker.com/r/rocker/shiny)
+line by line. This image is the [`rocker/shiny:4.3.0`](https://rocker-project.org/images/versioned/shiny.html)
 image. 
 
 ## Wrap-Up
